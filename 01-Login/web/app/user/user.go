@@ -12,5 +12,13 @@ func Handler(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	profile := session.Get("profile")
 
-	ctx.HTML(http.StatusOK, "user.html", profile)
+	u := struct {
+		Profile string
+		IDToken string
+	}{
+		Profile: profile.(string),
+		IDToken: session.Get("id_token").(string),
+	}
+
+	ctx.HTML(http.StatusOK, "user.html", u)
 }

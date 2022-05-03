@@ -31,14 +31,15 @@ func Handler(auth *authenticator.Authenticator) gin.HandlerFunc {
 			return
 		}
 
-		var profile map[string]interface{}
+		var profile map[string]any
 		if err := idToken.Claims(&profile); err != nil {
 			ctx.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		session.Set("access_token", token.AccessToken)
-		session.Set("profile", profile)
+		rawIDToken, _ := token.Extra("id_token").(string)
+		session.Set("id_token", rawIDToken)
+		session.Set("profile", profile["nickname"])
 		if err := session.Save(); err != nil {
 			ctx.String(http.StatusInternalServerError, err.Error())
 			return
